@@ -20,12 +20,12 @@ def construct_fields(options):
     all_fields = {field.name: field
                   for field in options.model._meta.declared_fields}
     all_fields.update(reverse_fields)
-    already_created_fields = {f.attname for f in options.local_fields}
+    # already_created_fields = {f.attname for f in options.local_fields}
 
     fields = OrderedDict()
     for name, field in all_fields.items():
         is_not_in_only = only_fields and name not in only_fields
-        is_already_created = name in already_created_fields
+        is_already_created = name in options.local_fields
         is_excluded = ((name in options.exclude_fields)
                        or is_already_created)
         if is_not_in_only or is_excluded:

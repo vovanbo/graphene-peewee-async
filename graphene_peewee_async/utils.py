@@ -161,10 +161,16 @@ def get_filtering_args(model, filters, prefix=''):
                 graphql_field = convert_peewee_field(field)
                 lookup_wrapper = lookup_wrappers.get(lookup)
                 if lookup_wrapper:
-                    graphql_field = lookup_wrapper(type(graphql_field))
+                    if isinstance(graphql_field, List):
+                        graphql_field = lookup_wrapper(type(graphql_field.of_type()))
+                    else:
+                        graphql_field = lookup_wrapper(type(graphql_field))
                     argument = graphql_field.Argument()
                 else:
-                    argument = graphql_field.get_type()().Argument()
+                    if isinstance(graphql_field, List):
+                        argument = graphql_field.of_type().Argument()
+                    else:
+                        argument = graphql_field.get_type()().Argument()
                 result[argument_name] = argument
     return result
 

@@ -61,7 +61,13 @@ class PeeweeConnectionField(ConnectionField):
             iterable = default_manager
         model = iterable
         query = cls.get_query(model, args, info)
-        iterable = yield from iterable._meta.manager.execute(query)
+
+        if isinstance(iterable, peewee.Query):
+            manager = iterable.model_class._meta.manager
+        else:
+            manager = iterable._meta.manager
+
+        iterable = yield from manager.execute(query)
         if False: #isinstance(iterable, QuerySet):
             _len = iterable.count()
         else:
